@@ -9,12 +9,11 @@ export const getDetailPackages = query({
             throw new ConvexError("Not authenticated")
         }
 
-        const packages = await ctx.db
-            .query("detailPackages")
-            .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
-            .collect()
+        return await ctx.db
+                    .query("detailPackages")
+                    .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
+                    .collect();
 
-        return packages
     },
 })
 
