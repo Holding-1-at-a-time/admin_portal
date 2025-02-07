@@ -24,12 +24,11 @@ export const getDetailServices = query({
             throw new ConvexError("Not authenticated")
         }
 
-        const services = await ctx.db
-            .query("detailServices")
-            .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
-            .collect()
+        return await ctx.db
+                    .query("detailServices")
+                    .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
+                    .collect();
 
-        return services
     },
 })
 
