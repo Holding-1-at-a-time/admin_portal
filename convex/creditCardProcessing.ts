@@ -1,10 +1,8 @@
-import { GenericId, v } from "convex/values"
+import { v } from "convex/values"
 import { mutation, query, action } from "./_generated/server"
 import { ConvexError } from "convex/values"
 import Stripe from "stripe"
 import { api } from "./_generated/api"
-import { GenericMutationCtx } from "convex/server"
-import { count } from "console"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2023-10-16",
@@ -28,62 +26,60 @@ export const getCreditCardProcessingSettings = query({
     }
   },
 })
+
 export const updateCreditCardProcessingSettings = mutation({
   args: {
     stripeConnectedAccountId: v.optional(v.string()),
     stripePaymentsEnabled: v.boolean(),
   },
-  async handler(args, ctx) {
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
-    if (identity.tenantId !== undefined) {
-      await ctx.db.insert("settings", {
-        ...args,
-        tenantId: identity.tenantId,
-      })
+    if (!identity) {
+      throw new ConvexError("Not authenticated")
+    }
+
+    const settings = await ctx.db
+      .query("settings")
+      .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
+      .unique()
+
+    if (settings) {
+      await ctx.db.patch(settings._id, args)
     } else {
-      // handle the case where tenantId is undefined
-      throw new ConvexError("Tenant ID is required")
+      await ctx.db.insert("settings", { ...args, tenantId: identity.tenantId })
     }
   },
 })
-/**
- * Returns a paginated list of transactions for the current tenant.
- *
- * @param page The page number to retrieve. The first page is page 1.
- * @param pageSize The number of transactions to retrieve per page.
- * @returns An object with the following properties:
- *   - transactions: An array of transactions. The array is guaranteed to have at most `pageSize` elements.
- *   - totalCount: The total number of transactions for the current tenant.
- *   - hasMore: A boolean indicating whether there are more transactions after the ones returned.
- */
+
 export const getPaginatedTransactions = query({
   args: {
     page: v.number(),
     pageSize: v.number(),
   },
-  handler: async (ctx, { page, pageSize }) => {
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
       throw new ConvexError("Not authenticated")
     }
+
+    const { page, pageSize } = args
     const skip = (page - 1) * pageSize
+
     const transactions = await ctx.db
       .query("transactions")
       .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
       .order("desc")
-      .collect()
+      .paginate({ numItems: pageSize, cursor: skip.toString() })
 
     const totalCount = await ctx.db
       .query("transactions")
-      
       .filter((q) => q.eq(q.field("tenantId"), identity.tenantId))
-      .collect()
-      .count();
+      .count()
 
     return {
-      transactions,
+      transactions: transactions.page,
       totalCount,
-      hasMore: totalCount > skip + pageSize,
+      hasMore: transactions.hasMore,
     }
   },
 })
@@ -113,9 +109,9 @@ export const refundTransaction = action({
     try {
       const refund = await stripe.refunds.create({
         charge: transaction.stripeChargeId,
-      }, {
-        stripeAccount: settings.stripeConnectedAccountId,
-      }) as Stripe.Refund
+        stripe_account: settings.stripeConnectedAccountId,
+      })
+
       await ctx.runMutation(api.creditCardProcessing.updateTransactionRefundStatus, {
         transactionId: args.transactionId,
         refunded: true,
@@ -170,20 +166,5 @@ export const updateTransactionRefundStatus = mutation({
       refunded: args.refunded,
       refundId: args.refundId,
     })
-  },
-})
-
-export const getStripeConnectUrl = query({
-  args: { tenantId: v.id("tenants") },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError("Not authenticated")
-    }
-
-    if (identity.tenantId !== args.tenantId) {
-      throw new ConvexError("Tenant not found")
-    }
-    return ctx.stripe.getStripeConnectUrl(args.tenantId)
   },
 })
