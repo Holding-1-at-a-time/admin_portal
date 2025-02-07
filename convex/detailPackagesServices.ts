@@ -46,13 +46,12 @@ export const createDetailPackage = mutation({
             throw new ConvexError("Not authenticated")
         }
 
-        const packageId = await ctx.db.insert("detailPackages", {
-            ...args,
-            tenantId: identity.tenantId,
-            isActive: true,
-        })
+        return await ctx.db.insert("detailPackages", {
+                    ...args,
+                    tenantId: identity.tenantId,
+                    isActive: true,
+                });
 
-        return packageId
     },
 })
 
