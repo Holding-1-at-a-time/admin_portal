@@ -70,13 +70,12 @@ export const createDetailService = mutation({
             throw new ConvexError("Not authenticated")
         }
 
-        const serviceId = await ctx.db.insert("detailServices", {
-            ...args,
-            tenantId: identity.tenantId,
-            isActive: true,
-        })
+        return await ctx.db.insert("detailServices", {
+                    ...args,
+                    tenantId: identity.tenantId,
+                    isActive: true,
+                });
 
-        return serviceId
     },
 })
 
