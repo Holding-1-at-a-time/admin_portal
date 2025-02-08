@@ -1,18 +1,17 @@
 "use client"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Pagination } from "@/components/ui/pagination"
-import { Switch } from "@/components/ui/switch"
-import { api } from "@/convex/_generated/api"
-import { useToast } from "@/hooks/use-toast"
-import { useAction, useMutation, useQuery } from "convex/react"
-import { AlertCircle, Loader2 } from "lucide-react"
-import Error from "next/error"
-import Image from "next/image"
 import { useState } from "react"
-import { TransactionDetailsModal } from "./TransactionDetailsModal"
+import { useQuery, useMutation, useAction } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useToast } from "@/components/ui/use-toast"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Loader2, AlertCircle } from "lucide-react"
+import Image from "next/image"
+import { Pagination } from "@/components/ui/pagination"
+import { TransactionDetailsModal } from "@/components/settings/TransactionDetailsModal"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export function CreditCardProcessingForm() {
   const { toast } = useToast()
@@ -38,7 +37,6 @@ export function CreditCardProcessingForm() {
       const state = Math.random().toString(36).substring(7)
       sessionStorage.setItem("stripeState", state)
       window.location.href = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${clientId}&scope=read_write&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -58,7 +56,6 @@ export function CreditCardProcessingForm() {
         title: "Settings Updated",
         description: `Stripe payments have been ${enabled ? "enabled" : "disabled"}.`,
       })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -68,8 +65,7 @@ export function CreditCardProcessingForm() {
     } finally {
       setIsLoading(false)
     }
-  };
-
+  }
 
   const handleRefund = async (transactionId: string) => {
     setIsLoading(true)
@@ -79,7 +75,6 @@ export function CreditCardProcessingForm() {
         title: "Refund Processed",
         description: "The transaction has been successfully refunded.",
       })
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",

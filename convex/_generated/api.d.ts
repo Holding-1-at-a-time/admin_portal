@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as companyRates from "../companyRates.js";
 import type * as creditCardProcessing from "../creditCardProcessing.js";
+import type * as detailPackagesServices from "../detailPackagesServices.js";
 import type * as files from "../files.js";
 import type * as invoiceEstimateSettings from "../invoiceEstimateSettings.js";
 import type * as settings from "../settings.js";
@@ -30,6 +31,7 @@ import type * as settings from "../settings.js";
 declare const fullApi: ApiFromModules<{
   companyRates: typeof companyRates;
   creditCardProcessing: typeof creditCardProcessing;
+  detailPackagesServices: typeof detailPackagesServices;
   files: typeof files;
   invoiceEstimateSettings: typeof invoiceEstimateSettings;
   settings: typeof settings;

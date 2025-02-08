@@ -133,5 +133,24 @@ export default defineSchema({
       defaultPricingType: v.string(),
     }),
   }).index("by_tenantId", ["tenantId"]),
+
+  detailPackages: defineTable({
+    tenantId: v.string(),
+    name: v.string(),
+    pricingMethod: v.string(),
+    price: v.number(),
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+  }).index("by_tenantId", ["tenantId"]),
+
+  detailServices: defineTable({
+    tenantId: v.string(),
+    name: v.string(),
+    pricingMethod: v.string(),
+    price: v.number(),
+    duration: v.optional(v.number()),
+    description: v.optional(v.string()),
+    isActive: v.boolean(),
+  }).index("by_tenantId", ["tenantId"]),
 })
 

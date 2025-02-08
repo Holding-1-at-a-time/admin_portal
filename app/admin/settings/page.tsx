@@ -1,8 +1,8 @@
 import { Suspense } from "react"
 import SettingsLayout from "./layout"
+import SettingsSidebar from "@/components/settings/SettingsSidebar"
+import SettingsContent from "@/components/settings/SettingsContent"
 import { Skeleton } from "@/components/ui/skeleton"
-import SettingsContent from "@/components/SettingsContent"
-import SettingsSidebar from "@/components/SettingsSidebar"
 
 export default function SettingsPage() {
   return (
@@ -13,7 +13,7 @@ export default function SettingsPage() {
         </aside>
         <div className="flex-1 lg:max-w-2xl">
           <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
-            <SettingsContent activePage={""} />
+            <SettingsContent />
           </Suspense>
         </div>
       </div>

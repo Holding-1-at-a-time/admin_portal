@@ -1,17 +1,17 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect } from "react"
+import { useQuery, useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
+import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { api } from "@/convex/_generated/api"
-import { useToast } from "@/hooks/use-toast"
-import { useMutation, useQuery } from "convex/react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
 
 // Define a type for the form data
 type FormData = {
@@ -90,7 +90,7 @@ export function InvoiceEstimateSettingsForm() {
     }
   }, [settings])
 
-  const handleInputChange = (name: string, value: unknown) => {
+  const handleInputChange = (name: string, value: any) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -117,7 +117,6 @@ export function InvoiceEstimateSettingsForm() {
         title: "Settings Updated",
         description: "Your invoice and estimate settings have been successfully updated.",
       })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
@@ -208,7 +207,7 @@ export function InvoiceEstimateSettingsForm() {
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Signature Disclosures</CardTitle>
-          <CardDescription>Customize your company&apos;s signature disclosures</CardDescription>
+          <CardDescription>Customize your company's signature disclosures</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
