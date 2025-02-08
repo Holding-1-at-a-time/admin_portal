@@ -3,9 +3,11 @@ import Stripe from "stripe"
 import { api } from "@/convex/_generated/api"
 import { ConvexHttpClient } from "convex/browser"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2023-10-16",
+})
 
-const convexClient = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -28,7 +30,7 @@ export async function GET(request: Request) {
     }
 
     // Store the connected account ID using Convex
-    await convexClient.mutation(api.creditCardProcessing.storeStripeConnectedAccountId, {
+    await convex.mutation(api.creditCardProcessing.storeStripeConnectedAccountId, {
       connectedAccountId,
     })
 
@@ -39,3 +41,4 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Failed to connect Stripe account" }, { status: 500 })
   }
 }
+

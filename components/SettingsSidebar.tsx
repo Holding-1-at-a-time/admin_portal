@@ -16,7 +16,7 @@ const settingsNavItems = [
   { title: "Misc Page Edit", href: "/admin/settings/misc" },
   { title: "Batch Import", href: "/admin/settings/batch-import" },
   { title: "Parts Program", href: "/admin/settings/parts-program" },
-  { title: "Detail Packages/Services", href: "/admin/settings/packages" },
+  { title: "Detail Packages/Services", href: "/admin/settings/detail-packages-services" },
   { title: "Exports", href: "/admin/settings/exports" },
   { title: "Checklists", href: "/admin/settings/checklists" },
   { title: "Client Text/Email Alerts", href: "/admin/settings/alerts" },

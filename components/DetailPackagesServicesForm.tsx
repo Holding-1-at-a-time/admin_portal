@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -20,7 +21,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useToast } from "@/hooks/use-toast"
 
 export function DetailPackagesServicesForm() {
   const { toast } = useToast()
@@ -56,11 +56,15 @@ export function DetailPackagesServicesForm() {
     e.preventDefault()
     setIsLoading(true)
     try {
+      const submitData = {
+        ...formData,
+        price: Math.round(formData.price * 100), // Convert to cents
+      }
       if (currentItem) {
         if (activeTab === "packages") {
-          await updatePackage({ ...formData, id: currentItem._id, isActive: currentItem.isActive })
+          await updatePackage({ ...submitData, id: currentItem._id, isActive: currentItem.isActive })
         } else {
-          await updateService({ ...formData, id: currentItem._id, isActive: currentItem.isActive })
+          await updateService({ ...submitData, id: currentItem._id, isActive: currentItem.isActive })
         }
         toast({
           title: `${activeTab === "packages" ? "Package" : "Service"} Updated`,
@@ -68,9 +72,9 @@ export function DetailPackagesServicesForm() {
         })
       } else {
         if (activeTab === "packages") {
-          await createPackage(formData)
+          await createPackage(submitData)
         } else {
-          await createService(formData)
+          await createService(submitData)
         }
         toast({
           title: `${activeTab === "packages" ? "Package" : "Service"} Created`,
@@ -221,9 +225,19 @@ export function DetailPackagesServicesForm() {
                           </Label>
                           <Input
                             id="price"
-                            type="number"
-                            value={formData.price}
-                            onChange={(e) => handleInputChange("price", Number.parseFloat(e.target.value))}
+                            type="text"
+                            pattern="^\d*\.?\d{0,2}$"
+                            value={formData.price.toFixed(2)}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              // Only allow numbers and decimal points
+                              if (!/^\d*\.?\d{0,2}$/.test(value) && value !== "") return
+
+                              // Convert to cents to maintain precision
+                              const cents = Math.round(Number.parseFloat(value || "0") * 100)
+                              handleInputChange("price", cents / 100)
+                            }}
+                            placeholder="0.00"
                             className="col-span-3"
                           />
                         </div>
@@ -270,7 +284,9 @@ export function DetailPackagesServicesForm() {
                       <TableCell>{item.name}</TableCell>
                       <TableCell>{item.pricingMethod}</TableCell>
                       <TableCell>
-                        {item.pricingMethod === "By The Hour" ? `${item.price} hrs` : `$${item.price.toFixed(2)}`}
+                        {item.pricingMethod === "By The Hour"
+                          ? `${(item.price / 100).toFixed(2)} hrs`
+                          : `$${(item.price / 100).toFixed(2)}`}
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
@@ -282,7 +298,7 @@ export function DetailPackagesServicesForm() {
                               setFormData({
                                 name: item.name,
                                 pricingMethod: item.pricingMethod,
-                                price: item.price,
+                                price: item.price / 100, // Convert from cents to dollars
                                 duration: item.duration || 0,
                                 description: item.description || "",
                               })
@@ -391,9 +407,19 @@ export function DetailPackagesServicesForm() {
                           </Label>
                           <Input
                             id="price"
-                            type="number"
-                            value={formData.price}
-                            onChange={(e) => handleInputChange("price", Number.parseFloat(e.target.value))}
+                            type="text"
+                            pattern="^\d*\.?\d{0,2}$"
+                            value={formData.price.toFixed(2)}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              // Only allow numbers and decimal points
+                              if (!/^\d*\.?\d{0,2}$/.test(value) && value !== "") return
+
+                              // Convert to cents to maintain precision
+                              const cents = Math.round(Number.parseFloat(value || "0") * 100)
+                              handleInputChange("price", cents / 100)
+                            }}
+                            placeholder="0.00"
                             className="col-span-3"
                           />
                         </div>
@@ -453,7 +479,9 @@ export function DetailPackagesServicesForm() {
                       <TableCell>{item.name}</TableCell>
                       <TableCell>{item.pricingMethod}</TableCell>
                       <TableCell>
-                        {item.pricingMethod === "By The Hour" ? `${item.price} hrs` : `$${item.price.toFixed(2)}`}
+                        {item.pricingMethod === "By The Hour"
+                          ? `${(item.price / 100).toFixed(2)} hrs`
+                          : `$${(item.price / 100).toFixed(2)}`}
                       </TableCell>
                       <TableCell>{item.duration} hrs</TableCell>
                       <TableCell>
@@ -466,7 +494,7 @@ export function DetailPackagesServicesForm() {
                               setFormData({
                                 name: item.name,
                                 pricingMethod: item.pricingMethod,
-                                price: item.price,
+                                price: item.price / 100, // Convert from cents to dollars
                                 duration: item.duration || 0,
                                 description: item.description || "",
                               })

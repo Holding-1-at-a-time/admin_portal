@@ -1,0 +1,9 @@
+feat: Update transaction details modal and API routes
+
+- Enhanced the TransactionDetailsModal component for better user experience.
+- Updated the API route for Stripe callback to handle new response formats.
+- Refactored invoice estimate settings and detail packages services for improved performance.
+- Adjusted credit card processing logic to align with the latest requirements.
+- Cleaned up unused upload logo API route.
+
+This commit improves the overall functionality and user experience of the application.

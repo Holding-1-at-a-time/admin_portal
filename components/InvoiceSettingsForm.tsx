@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react"
 import { useQuery, useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
+import { useToast } from "@/components/ui/use-toast"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
 
 // Define the shape of our form data
 interface InvoiceSettingsFormData {
@@ -55,7 +55,6 @@ export default function InvoiceSettingsForm() {
         title: "Settings Updated",
         description: "Your invoice settings have been successfully updated.",
       })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast({
         title: "Error",
